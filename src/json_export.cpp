@@ -3,9 +3,10 @@
 namespace BT
 {
 
+static JsonExporter global_instance;
+
 JsonExporter& JsonExporter::get()
 {
-  static JsonExporter global_instance;
   return global_instance;
 }
 
