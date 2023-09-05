@@ -70,6 +70,12 @@ public:
   /// To be preferred if the JSON doesn't contain the field [__type]
   ExpectedEntry fromJson(const nlohmann::json& source, std::type_index type) const;
 
+  /**
+   * @brief fromJson tries to convert arbitrary JSON data into the type T.
+   *
+   * Calls only compile if `nlohmann::from_json(const nlohmann::json&, T&)` is
+   * defined in T's namespace.
+   */
   template <typename T>
   Expected<T> fromJson(const nlohmann::json& source) const;
 
