@@ -152,10 +152,10 @@ public:
   }
 };
 
-class PrintComplex : public BT::SyncActionNode
+class PrintMapOfVectors : public BT::SyncActionNode
 {
 public:
-  PrintComplex(const std::string& name, const BT::NodeConfig& config) :
+  PrintMapOfVectors(const std::string& name, const BT::NodeConfig& config) :
     BT::SyncActionNode(name, config)
   {}
 
@@ -165,7 +165,7 @@ public:
     auto input = getInput<std::unordered_map<std::string, Vector3>>("input");
     if (input.has_value())
     {
-      std::cerr << "C++: {";
+      std::cerr << "{";
       for (const auto& [key, value] : *input)
       {
         std::cerr << key << ": ("
