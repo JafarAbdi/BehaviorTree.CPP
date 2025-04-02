@@ -52,6 +52,7 @@ class CMakeBuild(build_ext):
             "-DBTCPP_BUILD_TOOLS=OFF",
             "-DBTCPP_EXAMPLES=OFF",
             "-DBTCPP_UNIT_TESTS=OFF",
+            "-DBTCPP_SHARED_LIBS=OFF",
         ]
         build_args = []
         # Adding CMake arguments set as environment variable
@@ -134,7 +135,7 @@ setup(
     description="Python bindings to the BehaviorTree.CPP library",
     long_description="",
     packages=["btpy"],
-    ext_modules=[CMakeExtension("btcpp")],
+    ext_modules=[CMakeExtension("btpy_cpp")],
     cmdclass={"build_ext": CMakeBuild},
     zip_safe=False,
     python_requires=">=3.7",
