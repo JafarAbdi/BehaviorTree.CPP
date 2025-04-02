@@ -110,11 +110,12 @@ public:
   void addConverter(std::function<void(const nlohmann::json&, T&)> from_json);
 
 private:
-  using ToJonConverter = std::function<void(const BT::Any&, nlohmann::json&)>;
-  using FromJonConverter = std::function<Entry(const nlohmann::json&)>;
+  using ToJsonConverter = std::function<void(const BT::Any&, nlohmann::json&)>;
+  using FromJsonConverter = std::function<Entry(const nlohmann::json&)>;
+  std::unordered_map<std::type_index, ToJsonConverter> type_converters_;
 
-  std::unordered_map<std::type_index, ToJonConverter> to_json_converters_;
-  std::unordered_map<std::type_index, FromJonConverter> from_json_converters_;
+  std::unordered_map<std::type_index, ToJsonConverter> to_json_converters_;
+  std::unordered_map<std::type_index, FromJsonConverter> from_json_converters_;
   std::unordered_map<std::string, BT::TypeInfo> type_names_;
 };
 
@@ -139,12 +140,12 @@ inline Expected<T> JsonExporter::fromJson(const nlohmann::json& source) const
 template <typename T>
 inline void JsonExporter::addConverter()
 {
-  ToJonConverter to_converter = [](const BT::Any& entry, nlohmann::json& dst) {
+  ToJsonConverter to_converter = [](const BT::Any& entry, nlohmann::json& dst) {
     dst = *const_cast<BT::Any&>(entry).castPtr<T>();
   };
   to_json_converters_.insert({ typeid(T), to_converter });
 
-  FromJonConverter from_converter = [](const nlohmann::json& src) -> Entry {
+  FromJsonConverter from_converter = [](const nlohmann::json& src) -> Entry {
     T value = src.get<T>();
     return { BT::Any(value), BT::TypeInfo::Create<T>() };
   };
