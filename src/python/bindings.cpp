@@ -12,6 +12,7 @@
 #include "behaviortree_cpp/bt_factory.h"
 #include "behaviortree_cpp/action_node.h"
 #include "behaviortree_cpp/tree_node.h"
+#include "behaviortree_cpp/loggers/bt_cout_logger.h"
 
 namespace BT
 {
@@ -114,8 +115,10 @@ PortsList extractPortsList(const py::type& type)
 NodeBuilder makeTreeNodeBuilderFn(const py::type& type, const py::args& args,
                                   const py::kwargs& kwargs)
 {
-  return [=](const auto& name, const auto& config) -> auto
-  {
+  return [=](const auto& name, const auto& config) -> auto {
+    // Acquire the GIL before creating Python objects
+    py::gil_scoped_acquire acquire;
+
     py::object obj;
     obj = type(name, config, *args, **kwargs);
 
@@ -163,7 +166,10 @@ PYBIND11_MODULE(btpy_cpp, m)
       .def("create_tree_from_text",
            [](BehaviorTreeFactory& factory, const std::string& text) -> Tree {
              return factory.createTreeFromText(text);
-           });
+           })
+      .def("register_scripting_enum", &BT::BehaviorTreeFactory::registerScriptingEnum)
+      .def("register_behavior_tree_from_text",
+           &BT::BehaviorTreeFactory::registerBehaviorTreeFromText, py::arg("xml_text"));
 
   py::class_<Tree>(m, "Tree")
       .def("tick_once", &Tree::tickOnce)
@@ -200,6 +206,9 @@ PYBIND11_MODULE(btpy_cpp, m)
       .def("on_start", &Py_StatefulActionNode::onStart)
       .def("on_running", &Py_StatefulActionNode::onRunning)
       .def("on_halted", &Py_StatefulActionNode::onHalted);
+
+  py::class_<BT::StdCoutLogger>(m, "StdCoutLogger")
+      .def(py::init<const BT::Tree&>(), py::arg("tree"));
 }
 
-}   // namespace BT
+}  // namespace BT

@@ -180,7 +180,7 @@ if(BTCPP_PYTHON)
     find_package(Python COMPONENTS Interpreter Development)
     find_package(pybind11 CONFIG)
 
-    pybind11_add_module(btpy_cpp src/python/bindings.cpp)
+    pybind11_add_module(btpy_cpp NO_EXTRAS src/python/bindings.cpp)
     target_compile_options(btpy_cpp PRIVATE -Wno-gnu-zero-variadic-macro-arguments)
     target_link_libraries(btpy_cpp PRIVATE ${BTCPP_LIBRARY})
 

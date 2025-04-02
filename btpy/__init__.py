@@ -11,6 +11,7 @@ from btpy_cpp import (
     StatefulActionNode,
     SyncActionNode,
     Tree,
+    StdCoutLogger
 )
 
 
@@ -86,4 +87,5 @@ __all__ = [
     "StatefulActionNode",
     "SyncActionNode",
     "Tree",
+    "StdCoutLogger",
 ]
