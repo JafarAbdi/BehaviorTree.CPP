@@ -21,7 +21,12 @@ bool fromPythonObject(const pybind11::object& obj, T& dest)
 {
   if constexpr (nlohmann::detail::is_getable<nlohmann::json, T>::value)
   {
-    JsonExporter::get().fromJson<T>(obj, dest);
+    const auto value_maybe = JsonExporter::get().fromJson<T>(obj);
+    if (!value_maybe.has_value())
+    {
+      return false;
+    }
+    dest = value_maybe.value();
     return true;
   }
 

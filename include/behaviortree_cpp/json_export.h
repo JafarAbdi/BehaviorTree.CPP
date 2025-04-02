@@ -40,7 +40,14 @@ namespace BT
 *  BT::RegisterJsonDefinition<Point2D>();
 */
 
-class JsonExporter{
+//-----------------------------------------------------------------------------------
+
+/**
+*  Use RegisterJsonDefinition<Foo>();
+*/
+
+class JsonExporter
+{
 public:
   static JsonExporter& get();
 
@@ -81,17 +88,6 @@ public:
 
   /// Register new JSON converters with addConverter<Foo>().
   /// You should have used first the macro BT_JSON_CONVERTER
-  ///
-  ///    void nlohmann::to_json(nlohmann::json& destination, const Foo& foo)
-  template <typename T> void addConverter()
-  {
-    auto converter = [](const BT::Any& entry, nlohmann::json& dst) {
-      nlohmann::to_json(dst, entry.cast<T>());
-    };
-    type_converters_.insert( {typeid(T), std::move(converter)} );
-  }
-
-  /// Register directly your own converter.
   template <typename T>
   void addConverter();
 
@@ -112,7 +108,6 @@ public:
 private:
   using ToJsonConverter = std::function<void(const BT::Any&, nlohmann::json&)>;
   using FromJsonConverter = std::function<Entry(const nlohmann::json&)>;
-  std::unordered_map<std::type_index, ToJsonConverter> type_converters_;
 
   std::unordered_map<std::type_index, ToJsonConverter> to_json_converters_;
   std::unordered_map<std::type_index, FromJsonConverter> from_json_converters_;

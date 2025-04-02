@@ -99,13 +99,13 @@ PortsList extractPortsList(const py::type& type)
   const auto input_ports = type.attr("input_ports").cast<py::list>();
   for (const auto& name : input_ports)
   {
-    ports.insert(InputPort<PortInfo::AnyTypeAllowed>(name.cast<std::string>()));
+    ports.insert(InputPort<BT::AnyTypeAllowed>(name.cast<std::string>()));
   }
 
   const auto output_ports = type.attr("output_ports").cast<py::list>();
   for (const auto& name : output_ports)
   {
-    ports.insert(OutputPort<PortInfo::AnyTypeAllowed>(name.cast<std::string>()));
+    ports.insert(OutputPort<BT::AnyTypeAllowed>(name.cast<std::string>()));
   }
 
   return ports;
@@ -149,12 +149,12 @@ PYBIND11_MODULE(btpy_cpp, m)
              manifest.type = NodeType::ACTION;
              manifest.registration_ID = name;
              manifest.ports = extractPortsList(type);
-             manifest.description = "";
+             manifest.metadata.emplace_back("description", "");
 
              // Use the type's docstring as the node description, if it exists.
              if (const auto doc = type.attr("__doc__"); !doc.is_none())
              {
-               manifest.description = doc.cast<std::string>();
+               manifest.metadata.emplace_back("description", doc.cast<std::string>());
              }
 
              factory.registerBuilder(manifest, makeTreeNodeBuilderFn(type, args, kwargs));
