@@ -171,12 +171,21 @@ PYBIND11_MODULE(btpy_cpp, m)
       .def("register_behavior_tree_from_text",
            &BT::BehaviorTreeFactory::registerBehaviorTreeFromText, py::arg("xml_text"));
 
+  py::class_<BT::Blackboard, std::shared_ptr<BT::Blackboard>>(m, "Blackboard")
+      .def_static("create", &Blackboard::create)
+      .def("set",
+           [](BT::Blackboard* self, const std::string& key, const py::object& value) {
+             value.inc_ref();
+             return self->set(key, value);
+           });
+
   py::class_<Tree>(m, "Tree")
       .def("tick_once", &Tree::tickOnce)
       .def("tick_exactly_once", &Tree::tickExactlyOnce)
       .def("tick_while_running", &Tree::tickWhileRunning,
            py::arg("sleep_time") = std::chrono::milliseconds(10))
-      .def("halt_tree", &Tree::haltTree);
+      .def("halt_tree", &Tree::haltTree)
+      .def("root_blackboard", &Tree::rootBlackboard);
 
   py::enum_<NodeStatus>(m, "NodeStatus")
       .value("IDLE", NodeStatus::IDLE)
