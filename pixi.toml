@@ -13,7 +13,7 @@ test = "PATH=\"$PATH;build/Release\" build/tests/Release/behaviortree_cpp_test.e
 test = "./build/tests/behaviortree_cpp_test"
 
 [tasks]
-build = "mkdir -p build && cd build && cmake ../ -DCMAKE_BUILD_TYPE=Release && cmake --build . --parallel --config Release"
+build = "mkdir -p build && cd build && cmake ../ -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_BUILD_TYPE=Release && cmake --build . --parallel --config Release"
 
 [dependencies]
 cmake = ">=3.16.3"
@@ -23,6 +23,7 @@ zeromq = "4.3.*"
 gtest = "1.12.*"
 
 pre-commit = "*"
+pybind11 = ">=2.13.6,<3"
 
 [target.win-64.dependencies]
 vs2022_win-64 = "19.*"

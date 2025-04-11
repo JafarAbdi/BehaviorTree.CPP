@@ -200,7 +200,6 @@ inline void RegisterNodes(BT::BehaviorTreeFactory& factory)
   factory.registerNodeType<ApproachObject>("ApproachObject");
   factory.registerNodeType<SaySomething>("SaySomething");
   factory.registerNodeType<RandomVector>("RandomVector");
-  factory.registerNodeType<PrintComplex>("PrintComplex");
 
   BT::JsonExporter::get().addConverter<Vector3>();
 }

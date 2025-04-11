@@ -11,6 +11,13 @@
 #include "behaviortree_cpp/exceptions.h"
 #include "behaviortree_cpp/utils/locked_reference.hpp"
 
+#ifdef BTCPP_PYTHON
+#include <pybind11/pybind11.h>
+#include <pybind11/cast.h>
+
+#include "behaviortree_cpp/python/types.h"
+#endif
+
 namespace BT
 {
 
@@ -270,6 +277,42 @@ inline void Blackboard::set(const std::string& key, const T& value)
           new_value = std::move(any_from_string);
         }
       }
+#ifdef BTCPP_PYTHON
+      // py::object -> C++
+      else if(new_value.isType<pybind11::object>())
+      {
+        if(!fromPythonObject<T>(new_value.cast<pybind11::object>(),
+                                *previous_any.castPtr<T>()))
+        {
+          auto msg = StrCat("Cannot convert from Python object. "
+                            "Blackboard::set(",
+                            key,
+                            "): once declared, "
+                            "the type of a port shall not change. "
+                            "Previously declared type [",
+                            BT::demangle(previous_type), "], current type [",
+                            BT::demangle(typeid(T)), "]");
+          throw LogicError(msg);
+        }
+        mismatching = false;
+      }
+      // C++ -> py::object
+      // else if constexpr(std::is_same_v<T, pybind11::object>)
+      // {
+      //   if(!toPythonObject(new_value, previous_any))
+      //   {
+      //     auto msg = StrCat("Cannot convert from Python object"
+      //                       "Blackboard::set(",
+      //                       key,
+      //                       "): once declared, "
+      //                       "the type of a port shall not change. "
+      //                       "Previously declared type [",
+      //                       BT::demangle(previous_type), "], current type [",
+      //                       BT::demangle(typeid(T)), "]");
+      //     throw LogicError(msg);
+      //   }
+      // }
+#endif
       // check if we are doing a safe cast between numbers
       // for instance, it is safe to use int(100) to set
       // a uint8_t port, but not int(-42) or int(300)
